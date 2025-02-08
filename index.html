@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #chatbox { width: 80%; max-width: 600px; margin: 20px auto; padding: 10px; border: 1px solid #ccc; height: 400px; overflow-y: scroll; background-color: #f9f9f9; }
+        #userInput { width: 75%; padding: 10px; }
+        #sendButton { padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>Chatbot</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type a message...">
+    <button id="sendButton">Send</button>
+
+    <script>
+        document.getElementById("sendButton").addEventListener("click", function() {
+            const userMessage = document.getElementById("userInput").value;
+            if (userMessage.trim() === "") return;
+
+            const chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+
+            fetch("http://127.0.0.1:5000/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatbox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            })
+            .catch(error => console.error("Error:", error));
+
+            document.getElementById("userInput").value = "";
+        });
+    </script>
+
+</body>
+</html>
